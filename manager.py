@@ -21,7 +21,6 @@ def parse_args():
     return (commands, paths)
 
 
-
 def find_git_repos(path):
     git_repos = []
     if not os.path.isdir(path):
@@ -40,29 +39,26 @@ def find_git_repos(path):
     return git_repos
 
 
-def exec_git_command(path, cmd):
-    path = os.path.abspath(path)
-    git_repos = find_git_repos(path)
-    for repo in git_repos:
-        os.chdir(repo)
-        print "..." + repo.replace(path, '')
-        try:
-            print subprocess.check_output(["git"] + cmd)
-        except:
-            print 'FAILURE'
-            pass
-
-
-def main():
-    (commands, paths) = parse_args()
-    #find_git_repos(args.top_dir)
-    print commands, paths
+def run_all(commands, paths):
     for cmd in commands:
         print "*"*80
         print "Running 'git " + ' '.join(cmd) + "' in:"
         print "*"*80
         for path in paths:
-            exec_git_command(path, cmd)
+            abspath = os.path.abspath(path)
+            git_repos = find_git_repos(abspath)
+            for repo in git_repos:
+                os.chdir(repo)
+                print "..." + repo.replace(path, '')
+                try:
+                    print subprocess.check_output(["git"] + cmd)
+                except:
+                    print "FAILURE\n"
+
+
+def main():
+    (commands, paths) = parse_args()
+    run_all(commands, paths)
 
 
 if __name__ == '__main__':
