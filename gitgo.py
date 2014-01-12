@@ -1,5 +1,8 @@
 #!/usr/bin/python
 
+#TODO: add a flag for different commands per repo, e.g.
+#           -x 'checkout master' repo1 repo2 -x 'checkout testing' repo3
+
 import subprocess
 import os
 from argparse import ArgumentParser, RawTextHelpFormatter
@@ -15,7 +18,7 @@ def parse_args():
         "gitgo 'branch -a' 'remote show' -r packer gophercloud perigee\n"\
         "# git pull and checkout new branch on all subdirectories of repo1 "\
         "and repo2\n"\
-        "gitgo ~/repo1 ~/repo2 pull 'checkout -b new_branch'\n"\
+        "gitgo pull 'checkout -b new_branch' -r repo1 repo2\n"\
         "# get status of all repositories owned by benbp\n"\
         "gitgo status -o benbp\n"\
         )
