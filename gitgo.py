@@ -24,10 +24,11 @@ def parse_args():
     parser.add_argument('-r', '--directories', dest='repos', nargs='+',
                        help="Specify repository name. Will run commands on "\
                                 "repositories within the search path.")
-    parser.add_argument('-o', '--owner', dest='owners', nargs='+',
+    parser.add_argument('-o', '--owner', dest='owners', nargs='+', default=[],
                        help="Specify repository owner. Will run commands on "\
                                "repositories within the folder of <owner>.")
     parser.add_argument('-c', '--use-cwd', dest='use_cwd', action='store_true',
+                        default=[],
                        help="Search/run within current directory instead of "\
                                "within the $GOPATH")
     args = parser.parse_args()
@@ -39,8 +40,9 @@ def parse_args():
             commands.append(a.split(' '))
     if args.use_cwd:
         paths.append(os.getcwd())
-    elif not paths and not args.owners and not args.repos:
-        paths.append(os.environ['GOPATH'])
+    elif not paths:
+        go_src_path = os.path.join(os.environ['GOPATH'], 'src')
+        paths.append(go_src_path)
     options = {'owners': args.owners, 'repos': args.repos}
     return (commands, paths, options)
 
@@ -50,29 +52,31 @@ def find_git_repos(path, matches=[]):
     if not os.path.isdir(path):
         return []
     os.chdir(path)
-    if path in ' '.join(matches):
+    relevant_path = path.replace(os.environ['GOPATH'], '')
+    if not matches or [m for m in matches if m in relevant_path]:
         try:
-            subprocess.check_output(["git rev-parse"], shell=True,
-                                                    stderr=subprocess.PIPE)
-            return [path]
+            r = subprocess.check_output(["git rev-parse --is-inside-work-tree"],
+                                            shell=True, stderr=subprocess.PIPE)
+            if r == 'true\n':
+                return [path]
         except subprocess.CalledProcessError:
             pass
     for d in os.listdir(path):
         d = os.path.join(path, d)
-        repos = find_git_repos(d)
+        repos = find_git_repos(d, matches)
         if repos:
             git_repos = git_repos + repos
     return git_repos
 
 
-def run_all(commands, paths, match=False):
+def run_all(commands, paths, matches=[]):
     for cmd in commands:
         print "*"*80
         print "Running 'git " + ' '.join(cmd) + "' in:"
         print "*"*80
         for path in paths:
             abspath = os.path.abspath(path)
-            git_repos = find_git_repos(abspath)
+            git_repos = find_git_repos(abspath, matches)
             for repo in git_repos:
                 os.chdir(repo)
                 print "..." + repo.replace(path, '')
@@ -84,7 +88,6 @@ def run_all(commands, paths, match=False):
 
 def main():
     (commands, paths, options) = parse_args()
-    return
     if options['repos']:
         run_all(commands, paths, options['repos'])
     if options['owners']:
