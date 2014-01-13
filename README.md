@@ -16,3 +16,7 @@ gitgo pull 'checkout -b new_branch' -r repo1 repo2
 **get status of all repositories owned by <owner>**
 
 gitgo status -o benbp
+
+**switch to different branches across multiple repos as defined in a template**
+
+gitgo -p my_project

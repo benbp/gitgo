@@ -1,0 +1,21 @@
+# Example template file
+# Move to ~/.gitgo.yaml
+
+project1:
+    - site: github.com
+      owner: owner1
+      repo: repo1
+      branch: branch1
+    - site: github.com
+      owner: owner2
+      repo: repo2
+      branch: master
+project2: 
+    - site: github.com
+      owner: owner1
+      repo: repo1
+      branch: branch2
+    - site: code.google.com
+      owner: owner3
+      repo: repo3
+      branch: branch3
