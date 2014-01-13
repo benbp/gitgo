@@ -9,10 +9,11 @@ Move gitgo to somewhere in your path, and make it executable.
 
 Examples:
 
-**Show branches and remotes of selected repositories**
+
+**switch to different branches across multiple repos as defined in a template**
 
 ```
-gitgo 'branch -a' 'remote show' -r packer gophercloud perigee
+gitgo -p my_project
 ```
 
 **git pull and checkout new branch on all subdirectories of repo1 and repo2**
@@ -21,14 +22,16 @@ gitgo 'branch -a' 'remote show' -r packer gophercloud perigee
 gitgo pull 'checkout -b new_branch' -r repo1 repo2 
 ```
 
+**Show branches and remotes of selected repositories**
+
+```
+gitgo 'branch -a' 'remote show' -r packer gophercloud perigee
+```
+
+
 **get status of all repositories owned by <owner>**
 
 ```
 gitgo status -o benbp
 ```
 
-**switch to different branches across multiple repos as defined in a template**
-
-```
-gitgo -p my_project
-```
